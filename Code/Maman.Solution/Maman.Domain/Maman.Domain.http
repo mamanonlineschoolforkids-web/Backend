@@ -1,0 +1,6 @@
+@Maman.Domain_HostAddress = http://localhost:5157
+
+GET {{Maman.Domain_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

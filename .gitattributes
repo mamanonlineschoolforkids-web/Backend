@@ -1,0 +1,16 @@
+# Ensure text files use LF for consistency
+*.cs text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.csproj text eol=lf
+*.sln text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# Binary files should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.dll binary
+*.pdb binary
+*.exe binary
