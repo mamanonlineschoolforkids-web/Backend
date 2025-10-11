@@ -1,0 +1,59 @@
+# Visual Studio / IDE
+.vs/
+*.csproj.user
+*.suo
+*.sln.docstates
+*.user
+.vscode/
+.idea/
+
+# Build Artifacts
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.deps.json
+*.runtimeconfig.json
+*.genruntimeconfig.cache
+apphost.exe
+
+# Sensitive Configuration Files
+appsettings.json
+appsettings.*.json
+*.env
+*.secret
+
+# Logs
+*.log
+logs/
+
+# Dependency Directories
+/packages/
+
+# Runtime-specific Files
+runtimes/
+
+# Temporary Files
+*.bak
+*.tmp
+*.swp
+Thumbs.db
+
+# Database Files
+*.mdf
+*.ldf
+
+# Coverage and Test Results
+*.trx
+*.coverage
+TestResults/
+coverlet/
+
+# Miscellaneous
+[Dd]ebug/
+[Rr]elease/
+*.publishproj
+*.nupkg
+*.snk
