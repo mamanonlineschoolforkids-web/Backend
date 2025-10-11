@@ -56,6 +56,8 @@ public class Program
 		app.UseStatusCodePagesWithReExecute("/Error/{0}"); // Handles 404, 401, etc.
 
 		app.UseHttpsRedirection();
+		
+		app.UseOutputCache();
 
 		app.UseAuthorization();
 

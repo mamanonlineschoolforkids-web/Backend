@@ -4,6 +4,7 @@ using Maman.Core;
 using Maman.Core.Interfaces.Services;
 using Maman.Infrastructure;
 using Maman.Infrastructure.Data;
+using StackExchange.Redis;
 
 namespace Maman.API.Extensions;
 
@@ -15,6 +16,8 @@ public static class DIServices
 		Services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
 		Services.AddScoped<MongoDbContext>();
 
+
+		Services.AddSingleton(typeof(ICacheService), typeof(CacheService));
 
 		Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
@@ -38,6 +41,19 @@ public static class DIServices
 
 				return new BadRequestObjectResult(validationErrorResponse);
 			};
+		});
+		#endregion
+
+		#region In-Memory Cache
+		Services.AddOutputCache(); // Enables the middleware
+		Services.AddMemoryCache();
+		#endregion
+
+		#region Redis Cache
+		Services.AddSingleton<IConnectionMultiplexer>(provider =>
+		{
+			var connectionString = Configuration.GetConnectionString("Redis");
+			return ConnectionMultiplexer.Connect(connectionString);
 		});
 		#endregion
 

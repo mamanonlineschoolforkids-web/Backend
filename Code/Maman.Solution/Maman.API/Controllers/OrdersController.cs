@@ -1,4 +1,5 @@
 ﻿using Maman.API.Exceptions;
+using Maman.API.Helpers;
 using Maman.Application.DTOs;
 using Maman.Core.Interfaces.Services;
 
@@ -18,6 +19,7 @@ public class OrdersController : ControllerBase
 	[HttpPut("products/{productId}/name")]
 	[ProducesResponseType( StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+	//[CachingAttribute(600)]
 	public async Task<IActionResult> UpdateProductName(string productId, [FromBody] UpdateNameRequest request)
 	{
 		try
