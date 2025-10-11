@@ -1,31 +1,41 @@
 ﻿using Maman.Core.Entities;
 using MongoDB.Bson;
+using System.ComponentModel.DataAnnotations;
 
-namespace Maman.Infrastructure.Persistence;
+namespace Maman.Infrastructure.Data;
 
-public class MongoDbContext
+public class MongoDbContext : IDisposable
 {
 	private readonly IMongoDatabase _database;
+	public IMongoClient Client { get; }
 
 	public MongoDbContext(IOptions<MongoDbSettings> settings)
 	{
-		var client = new MongoClient(settings.Value.ConnectionString);
 
-		_database = client.GetDatabase(settings.Value.DatabaseName);
+		Client = new MongoClient(settings.Value.ConnectionString);
+
+		_database = Client.GetDatabase(settings.Value.DatabaseName);
 	}
 
 	//public IMongoCollection<User> Users => _database.GetCollection<User>("users");
 
-	// For Unit of Work pattern with transactions
-	public IMongoClient Client { get; }
 	public IMongoCollection<T> GetCollection<T>() where T : BaseEntity
 	{
 		return _database.GetCollection<T>(typeof(T).Name);
 	}
+
+	public void Dispose()
+	{
+		Client?.Dispose();
+	}
+
 }
+
 
 public class MongoDbSettings
 {
+	[Required]
 	public string ConnectionString { get; set; }
+	[Required]
 	public string DatabaseName { get; set; }
 }

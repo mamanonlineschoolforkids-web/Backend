@@ -1,7 +1,7 @@
 ﻿using Maman.Core;
 using Maman.Core.Entities;
 using Maman.Core.Interfaces.Repositories;
-using Maman.Infrastructure.Persistence;
+using Maman.Infrastructure.Data;
 using Maman.Infrastructure.Repositories;
 using System.Collections;
 

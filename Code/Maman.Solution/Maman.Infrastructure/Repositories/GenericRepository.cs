@@ -1,7 +1,7 @@
 ﻿using Maman.Core.Entities;
 using Maman.Core.Interfaces.Repositories;
 using Maman.Core.Specifications;
-using Maman.Infrastructure.Persistence;
+using Maman.Infrastructure.Data;
 using Maman.Infrastructure.Specifications;
 using SharpCompress.Common;
 

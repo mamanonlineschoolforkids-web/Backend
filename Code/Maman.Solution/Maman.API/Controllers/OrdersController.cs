@@ -1,7 +1,6 @@
-﻿using Maman.Application.DTOs;
+﻿using Maman.API.Errors;
+using Maman.Application.DTOs;
 using Maman.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Maman.API.Controllers;
 
@@ -17,6 +16,8 @@ public class OrdersController : ControllerBase
 	}
 
 	[HttpPut("products/{productId}/name")]
+	[ProducesResponseType( StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> UpdateProductName(string productId, [FromBody] UpdateNameRequest request)
 	{
 		try
@@ -26,11 +27,13 @@ public class OrdersController : ControllerBase
 		}
 		catch (Exception ex)
 		{
-			return BadRequest(ex.Message);
+			return BadRequest(new BaseErrorResponse (400 , ex.Message));
 		}
 	}
 
 	[HttpPost]
+	[ProducesResponseType(StatusCodes.Status201Created)]
+	[ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
 	{
 		try
@@ -42,7 +45,7 @@ public class OrdersController : ControllerBase
 		catch (Exception ex)
 		{
 			// This will catch both "Product not found" and "Insufficient stock" errors.
-			return BadRequest(new { error = ex.Message });
+			return BadRequest(new BaseErrorResponse(400, ex.Message));
 		}
 	}
 }

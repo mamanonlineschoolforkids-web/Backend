@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Maman.Core\Maman.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Seeding\" />
+  </ItemGroup>
+
 </Project>
