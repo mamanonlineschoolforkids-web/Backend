@@ -1,8 +1,5 @@
-using Maman.API.Errors;
+using Maman.API.Exceptions;
 using Maman.API.Extensions;
-using Maman.API.Handlers;
-using Maman.API.Middlewares;
-using Maman.Infrastructure.Data;
 using System.Text.Json;
 
 namespace Maman.API;
@@ -14,9 +11,9 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
 
-        builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase); // Global camelCase;
+		builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase); // Global camelCase;
 		builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+		builder.Services.AddSwaggerGen();
 
 		builder.Services.AddApplicationServices(builder.Configuration);
 
@@ -24,52 +21,39 @@ public class Program
 		ConventionRegistry.Register("CamelCase", camelCaseConvention, type => true);
 
 
-		builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 		var app = builder.Build();
-
-		app.Lifetime.ApplicationStopping.Register(() =>
-		{
-			// Dispose the context if you have access to the service provider
-			using var scope = app.Services.CreateScope();
-			if (scope.ServiceProvider.GetService<MongoDbContext>() is IDisposable disposable)
-			{
-				disposable.Dispose();
-			}
-		});
 
 		#region DataSeeding
 
 		#endregion
 
-		#region ExceptionHandling
-		app.UseMiddleware<ExceptionHandlerMiddleware>();
+
+		#region Error Endpoints
+		// Centralized endpoint for handling non-success status codes (e.g., 404)
+		app.Map("/Error/{code:int}", (int code, ILogger<Program> logger) =>
+		{
+			logger.LogWarning("An error occurred with status code: {StatusCode}", code);
+			return Results.Json(new BaseErrorResponse(code), statusCode: code);
+		}).ExcludeFromDescription(); // Hide from Swagger
+
+
+		// Centralized endpoint for unhandled exceptions (500)
+		app.Map("/Error", (ILogger<Program> logger) =>
+		{
+			logger.LogError("An unhandled exception occurred.");
+			return Results.Json(new BaseErrorResponse(500), statusCode: 500);
+		}).ExcludeFromDescription(); 
 		#endregion
 
 		if (app.Environment.IsDevelopment())
-			{
+		{
 				app.UseSwagger();
 				app.UseSwaggerUI();
-			}
 
-		if (!app.Environment.IsDevelopment())
-		{
-			app.UseExceptionHandler();
-			app.UseStatusCodePagesWithReExecute("/Error/{0}");
-		}
-		else
-		{
-			app.UseDeveloperExceptionPage();
 		}
 
-		// Add this endpoint to catch 404s etc.
-		app.Map("/Error/{code:int}", (int code) =>
-		{
-			var logger = app.Services.GetRequiredService<ILogger<Program>>();
-			logger.LogWarning("Endpoint not found: {Code}", code);
-
-			var response = new BaseErrorResponse(code);
-			return Results.Json(response, statusCode: code, options: new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-		}).ExcludeFromDescription(); // Hide from Swagger
+		app.UseExceptionHandler("/Error"); // Handles true exceptions (500-level)
+		app.UseStatusCodePagesWithReExecute("/Error/{0}"); // Handles 404, 401, etc.
 
 		app.UseHttpsRedirection();
 

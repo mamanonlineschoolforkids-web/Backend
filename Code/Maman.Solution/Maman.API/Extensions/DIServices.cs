@@ -1,11 +1,9 @@
-﻿using Maman.API.Errors;
+﻿using Maman.API.Exceptions;
 using Maman.Application.Services;
 using Maman.Core;
-using Maman.Core.Interfaces.Repositories;
 using Maman.Core.Interfaces.Services;
 using Maman.Infrastructure;
 using Maman.Infrastructure.Data;
-using Maman.Infrastructure.Repositories;
 
 namespace Maman.API.Extensions;
 
@@ -15,13 +13,14 @@ public static class DIServices
 	{
 
 		Services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
-		Services.AddSingleton<MongoDbContext>();
+		Services.AddScoped<MongoDbContext>();
 
-		//Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 		Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
 		Services.AddScoped(typeof(IOrderService), typeof(OrderService));
+
+		Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 		#region Validation Error Handling
 
@@ -34,10 +33,8 @@ public static class DIServices
 													.Select(e => e.ErrorMessage)
 													.ToArray();
 
-				var validationErrorResponse = new ValidationErrorResponse()
-				{
-					Errors = errors
-				};
+				var validationErrorResponse = new BaseErrorResponse(400, "A Validation error response occurred", null, errors);
+			
 
 				return new BadRequestObjectResult(validationErrorResponse);
 			};

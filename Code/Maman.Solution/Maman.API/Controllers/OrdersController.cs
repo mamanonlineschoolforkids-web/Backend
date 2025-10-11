@@ -1,4 +1,4 @@
-﻿using Maman.API.Errors;
+﻿using Maman.API.Exceptions;
 using Maman.Application.DTOs;
 using Maman.Core.Interfaces.Services;
 

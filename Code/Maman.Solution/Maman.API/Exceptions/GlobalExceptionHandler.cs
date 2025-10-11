@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
-using Maman.API.Errors;
+using Maman.API.Exceptions;
 using System.Text.Json;
 
-namespace Maman.API.Handlers;
+namespace Maman.API.Exceptions;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
@@ -36,6 +36,6 @@ public class GlobalExceptionHandler : IExceptionHandler
 		var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 		await context.Response.WriteAsync(JsonSerializer.Serialize(response, options), cancellationToken);
 
-		return true; // Handled
+		return true;
 	}
 }

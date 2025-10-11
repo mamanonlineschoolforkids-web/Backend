@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Maman.API.Errors;
+namespace Maman.API.Exceptions;
 
 public class BaseErrorResponse
 {
@@ -14,9 +14,9 @@ public class BaseErrorResponse
     public string? Details { get; set; } // For dev/prod diffs (e.g., stack trace)
 
     [JsonPropertyName("errors")]
-    public IEnumerable<string>? Errors { get; set; } // For lists (e.g., validation)
+    public IEnumerable<string>? Errors { get; set; } // validation
 
-    public BaseErrorResponse(int statusCode, string message = null, string? details = null, IEnumerable<string>? errors = null)
+	public BaseErrorResponse(int statusCode, string message = null, string? details = null, IEnumerable<string>? errors = null)
     {
         StatusCode = statusCode;
         Message = message ?? GetStatusCodeDefaultMessage(statusCode);
@@ -29,7 +29,7 @@ public class BaseErrorResponse
         400 => "Bad Request",
         401 => "Unauthorized",
         403 => "Forbidden",
-        404 => "Resource Not Found",
+        404 => "Not Found",
         500 => "Internal Server Error",
         _ => "An unexpected error occurred"
     };
