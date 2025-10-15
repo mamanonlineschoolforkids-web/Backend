@@ -1,6 +1,6 @@
 ﻿namespace Maman.Application.DTOs;
 
-public class CreateOrderRequest
+public class CreateOrderDTO
 {
 	public string ProductId { get; set; }
 	public int Quantity { get; set; }

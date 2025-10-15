@@ -27,7 +27,6 @@ public class Program
 
 		#endregion
 
-
 		#region Error Endpoints
 		// Centralized endpoint for handling non-success status codes (e.g., 404)
 		app.Map("/Error/{code:int}", (int code, ILogger<Program> logger) =>
@@ -49,11 +48,11 @@ public class Program
 		{
 				app.UseSwagger();
 				app.UseSwaggerUI();
-
 		}
 
 		app.UseExceptionHandler("/Error"); // Handles true exceptions (500-level)
 		app.UseStatusCodePagesWithReExecute("/Error/{0}"); // Handles 404, 401, etc.
+
 
 		app.UseHttpsRedirection();
 		

@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Maman.API.Exceptions;
-using System.Text.Json;
-
-namespace Maman.API.Exceptions;
+﻿namespace Maman.API.Exceptions;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {

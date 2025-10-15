@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Maman.API.Exceptions;
+﻿namespace Maman.API.Exceptions;
 
 public class BaseErrorResponse
 {

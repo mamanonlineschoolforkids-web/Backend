@@ -1,8 +1,4 @@
-﻿using Maman.Core.Interfaces.Services;
-using StackExchange.Redis;
-using System.Text.Json;
-
-namespace Maman.Application.Services;
+﻿namespace Maman.Application.Services;
 
 public class CacheService : ICacheService
 {
@@ -15,9 +11,8 @@ public class CacheService : ICacheService
 	{
 		if (response is null) return;
 
-		var serializedOptions = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-		var serializedResponse = JsonSerializer.Serialize(response, serializedOptions);
+		var serializedResponse = JsonSerializer.Serialize(response);
 
 		await _database.StringSetAsync(key, serializedResponse, timeOut);
 	}

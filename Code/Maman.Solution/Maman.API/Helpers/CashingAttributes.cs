@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System.Text;
-
-namespace Maman.API.Helpers;
+﻿namespace Maman.API.Helpers;
 
 public class CachingAttribute : Attribute, IAsyncActionFilter
 {

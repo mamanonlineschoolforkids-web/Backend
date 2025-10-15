@@ -1,9 +1,4 @@
-﻿using Maman.API.Exceptions;
-using Maman.API.Helpers;
-using Maman.Application.DTOs;
-using Maman.Core.Interfaces.Services;
-
-namespace Maman.API.Controllers;
+﻿namespace Maman.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -20,7 +15,8 @@ public class OrdersController : ControllerBase
 	[ProducesResponseType( StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
 	//[CachingAttribute(600)]
-	public async Task<IActionResult> UpdateProductName(string productId, [FromBody] UpdateNameRequest request)
+	//[OutputCache(Duration = 600, NoStore = false)]
+	public async Task<IActionResult> UpdateProductName(string productId, [FromBody] UpdateNameDTO request)
 	{
 		try
 		{
@@ -36,7 +32,8 @@ public class OrdersController : ControllerBase
 	[HttpPost]
 	[ProducesResponseType(StatusCodes.Status201Created)]
 	[ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+	[ServiceFilter(typeof(ValidationFilter<CreateOrderDTO>))]
+	public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTO request)
 	{
 		try
 		{

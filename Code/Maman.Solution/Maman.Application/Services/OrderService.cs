@@ -1,6 +1,4 @@
-﻿using Maman.Core;
-using Maman.Core.Entities;
-using Maman.Core.Interfaces.Services;
+﻿using Order = Maman.Core.Entities.Order;
 
 namespace Maman.Application.Services;
 

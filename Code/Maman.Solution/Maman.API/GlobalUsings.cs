@@ -1,2 +1,17 @@
 ﻿global using Microsoft.AspNetCore.Mvc;
 global using MongoDB.Bson.Serialization.Conventions;
+global using FluentValidation;
+global using Maman.API.Exceptions;
+global using Microsoft.AspNetCore.Mvc.Filters;
+global using Maman.Core.Interfaces.Services;
+global using System.Text;
+global using Maman.API.Helpers;
+global using Maman.Application.Services;
+global using Maman.Core;
+global using Maman.Infrastructure;
+global using Maman.Infrastructure.Data;
+global using StackExchange.Redis;
+global using Microsoft.AspNetCore.Diagnostics;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using Maman.Application.DTOs;
