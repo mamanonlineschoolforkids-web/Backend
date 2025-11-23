@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="EmailAlreadyExists" xml:space="preserve">
+    <value>Email address already exists</value>
+  </data>
+	<data name="PhoneNumberAlreadyExists" xml:space="preserve">
+    <value>Phone number already exists</value>
+  </data>
+	<data name="RegistrationSuccessful" xml:space="preserve">
+    <value>Registration successful. Please check your email to verify your account.</value>
+  </data>
+	<data name="RegistrationFailed" xml:space="preserve">
+    <value>Registration failed. Please try again.</value>
+  </data>
+	<data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid email or password</value>
+  </data>
+	<data name="AccountLockedOut" xml:space="preserve">
+    <value>Account is locked until {0}. Too many failed login attempts.</value>
+  </data>
+	<data name="AccountDeleted" xml:space="preserve">
+    <value>This account has been deleted</value>
+  </data>
+	<data name="AccountSuspended" xml:space="preserve">
+    <value>This account has been suspended. Please contact support.</value>
+  </data>
+	<data name="EmailNotVerified" xml:space="preserve">
+    <value>Please verify your email address before logging in</value>
+  </data>
+	<data name="TwoFactorCodeRequired" xml:space="preserve">
+    <value>Two-factor authentication code is required</value>
+  </data>
+	<data name="InvalidTwoFactorCode" xml:space="preserve">
+    <value>Invalid two-factor authentication code</value>
+  </data>
+	<data name="LoginSuccessful" xml:space="preserve">
+    <value>Login successful</value>
+  </data>
+	<data name="LoginFailed" xml:space="preserve">
+    <value>Login failed. Please try again.</value>
+  </data>
+	<data name="InvalidGoogleToken" xml:space="preserve">
+    <value>Invalid Google token</value>
+  </data>
+	<data name="GoogleLoginFailed" xml:space="preserve">
+    <value>Google login failed. Please try again.</value>
+  </data>
+	<data name="AccountNotActive" xml:space="preserve">
+    <value>This account is not active</value>
+  </data>
+	<data name="InvalidRefreshToken" xml:space="preserve">
+    <value>Invalid or expired refresh token</value>
+  </data>
+	<data name="UserNotFound" xml:space="preserve">
+    <value>User not found</value>
+  </data>
+	<data name="TokenRefreshFailed" xml:space="preserve">
+    <value>Token refresh failed</value>
+  </data>
+	<data name="TokenRevoked" xml:space="preserve">
+    <value>Token revoked successfully</value>
+  </data>
+	<data name="TokenRevokeFailed" xml:space="preserve">
+    <value>Failed to revoke token</value>
+  </data>
+	<data name="LogoutSuccessful" xml:space="preserve">
+    <value>Logout successful</value>
+  </data>
+	<data name="LogoutFailed" xml:space="preserve">
+    <value>Logout failed</value>
+  </data>
+	<data name="PasswordResetEmailSent" xml:space="preserve">
+    <value>If your email exists in our system, you will receive a password reset link shortly.</value>
+  </data>
+	<data name="PasswordResetRequestFailed" xml:space="preserve">
+    <value>Password reset request failed</value>
+  </data>
+	<data name="InvalidOrExpiredToken" xml:space="preserve">
+    <value>Invalid or expired token</value>
+  </data>
+	<data name="PasswordResetSuccessful" xml:space="preserve">
+    <value>Password reset successful. You can now login with your new password.</value>
+  </data>
+	<data name="PasswordResetFailed" xml:space="preserve">
+    <value>Password reset failed</value>
+  </data>
+	<data name="EmailAlreadyVerified" xml:space="preserve">
+    <value>Email is already verified</value>
+  </data>
+	<data name="EmailVerifiedSuccessfully" xml:space="preserve">
+    <value>Email verified successfully</value>
+  </data>
+	<data name="EmailVerificationFailed" xml:space="preserve">
+    <value>Email verification failed</value>
+  </data>
+	<data name="VerificationEmailResent" xml:space="preserve">
+    <value>Verification email has been resent</value>
+  </data>
+	<data name="ResendVerificationFailed" xml:space="preserve">
+    <value>Failed to resend verification email</value>
+  </data>
+	<data name="InvalidPassword" xml:space="preserve">
+    <value>Invalid password</value>
+  </data>
+	<data name="TwoFactorAlreadyEnabled" xml:space="preserve">
+    <value>Two-factor authentication is already enabled</value>
+  </data>
+	<data name="TwoFactorSetupInitiated" xml:space="preserve">
+    <value>Two-factor authentication setup initiated. Please scan the QR code with your authenticator app.</value>
+  </data>
+	<data name="TwoFactorEnableFailed" xml:space="preserve">
+    <value>Failed to enable two-factor authentication</value>
+  </data>
+	<data name="TwoFactorNotSetup" xml:space="preserve">
+    <value>Two-factor authentication is not set up</value>
+  </data>
+	<data name="TwoFactorEnabled" xml:space="preserve">
+    <value>Two-factor authentication enabled successfully</value>
+  </data>
+	<data name="TwoFactorVerifyFailed" xml:space="preserve">
+    <value>Failed to verify two-factor authentication</value>
+  </data>
+	<data name="TwoFactorNotEnabled" xml:space="preserve">
+    <value>Two-factor authentication is not enabled</value>
+  </data>
+	<data name="TwoFactorDisabled" xml:space="preserve">
+    <value>Two-factor authentication disabled successfully</value>
+  </data>
+	<data name="TwoFactorDisableFailed" xml:space="preserve">
+    <value>Failed to disable two-factor authentication</value>
+  </data>
+
+	<data name="UserNotFound" xml:space="preserve">
+    <value>User not found</value>
+  </data>
+	<data name="GetProfileFailed" xml:space="preserve">
+    <value>Failed to get profile</value>
+  </data>
+	<data name="ProfileUpdatedSuccessfully" xml:space="preserve">
+    <value>Profile updated successfully</value>
+  </data>
+	<data name="UpdateProfileFailed" xml:space="preserve">
+    <value>Failed to update profile</value>
+  </data>
+	<data name="InvalidCurrentPassword" xml:space="preserve">
+    <value>Current password is incorrect</value>
+  </data>
+	<data name="PasswordChangedSuccessfully" xml:space="preserve">
+    <value>Password changed successfully. You have been logged out from all devices.</value>
+  </data>
+	<data name="PasswordChangeFailed" xml:space="preserve">
+    <value>Failed to change password</value>
+  </data>
+	<data name="InvalidFileType" xml:space="preserve">
+    <value>Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.</value>
+  </data>
+	<data name="FileTooLarge" xml:space="preserve">
+    <value>File size exceeds 5MB limit</value>
+  </data>
+	<data name="ProfilePictureUploadedSuccessfully" xml:space="preserve">
+    <value>Profile picture uploaded successfully</value>
+  </data>
+	<data name="ProfilePictureUploadFailed" xml:space="preserve">
+    <value>Failed to upload profile picture</value>
+  </data>
+	<data name="InvalidPassword" xml:space="preserve">
+    <value>Invalid password</value>
+  </data>
+	<data name="AccountDeletionScheduled" xml:space="preserve">
+    <value>Your account has been scheduled for deletion. You have 30 days to restore it.</value>
+  </data>
+	<data name="AccountDeletionFailed" xml:space="preserve">
+    <value>Failed to delete account</value>
+  </data>
+	<data name="AccountNotDeleted" xml:space="preserve">
+    <value>Account is not deleted</value>
+  </data>
+	<data name="AccountCannotBeRestored" xml:space="preserve">
+    <value>Account cannot be restored. The 30-day window has passed.</value>
+  </data>
+	<data name="AccountRestoredSuccessfully" xml:space="preserve">
+    <value>Account restored successfully</value>
+  </data>
+	<data name="AccountRestoreFailed" xml:space="preserve">
+    <value>Failed to restore account</value>
+  </data>
+	<data name="UserPermanentlyDeleted" xml:space="preserve">
+    <value>User permanently deleted</value>
+  </data>
+	<data name="PermanentDeletionFailed" xml:space="preserve">
+    <value>Failed to permanently delete user</value>
+  </data>
+	<data name="ProfileSharedSuccessfully" xml:space="preserve">
+    <value>Profile shared successfully</value>
+  </data>
+	<data name="ProfileShareFailed" xml:space="preserve">
+    <value>Failed to share profile</value>
+  </data>
+	<data name="GetUsersFailed" xml:space="preserve">
+    <value>Failed to get users list</value>
+  </data>
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+</root>
