@@ -1,25 +1,31 @@
 ﻿using FluentValidation;
 using Maman.Application.DTOs.Auth;
+using Maman.Localization;
+using Microsoft.Extensions.Localization;
 
 
 namespace Maman.Application.Validators.Auth;
 
 public class GoogleLoginRequestDtoValidator : AbstractValidator<GoogleLoginRequestDto>
 {
-	public GoogleLoginRequestDtoValidator()
+    private readonly IStringLocalizer<SharedResource> _localizer;
+
+    public GoogleLoginRequestDtoValidator(IStringLocalizer<SharedResource> localizer)
 	{
-		RuleFor(x => x.IdToken)
-			.NotEmpty().WithMessage("Google ID token is required");
+        _localizer = localizer;
+        RuleFor(x => x.IdToken)
+			.NotEmpty().WithMessage(_localizer["GoogleIDTokenIsRequired"]);
 
 		RuleFor(x => x.Country)
-			.Length(2, 100).WithMessage("Country must be between 2 and 100 characters")
+			.Length(2, 100).WithMessage(_localizer["ValidationCountryLength"])
 			.When(x => !string.IsNullOrEmpty(x.Country));
 
 		RuleFor(x => x.PhoneNumber)
-			.Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("Invalid phone number format")
+			.Matches(@"^\+?[1-9]\d{1,14}$").WithMessage(_localizer["InvalidPhoneNumberFormat"])
 			.When(x => !string.IsNullOrEmpty(x.PhoneNumber));
 
 		RuleFor(x => x.Role)
-			.IsInEnum().WithMessage("Invalid role selected");
-	}
+			.IsInEnum().WithMessage(_localizer["InvalidRoleSelected"]);
+       
+    }
 }

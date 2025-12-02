@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Maman.Application.DTOs.Auth;
+using Maman.Localization;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +12,28 @@ namespace Maman.Application.Validators.Auth
 {
 	public class ResetPasswordDtoValidator : AbstractValidator<ResetPasswordDto>
 	{
-		public ResetPasswordDtoValidator()
+        private readonly IStringLocalizer<SharedResource> _localizer;
+
+        public ResetPasswordDtoValidator(IStringLocalizer<SharedResource> localizer)
 		{
-			RuleFor(x => x.Token)
-				.NotEmpty().WithMessage("Reset token is required");
+            _localizer = localizer;
+            RuleFor(x => x.Token)
+				.NotEmpty().WithMessage(_localizer["ResetTokenIsRequired"]);
 
 			RuleFor(x => x.NewPassword)
-				.NotEmpty().WithMessage("New password is required")
-				.MinimumLength(8).WithMessage("Password must be at least 8 characters")
-				.MaximumLength(100).WithMessage("Password must not exceed 100 characters")
-				.Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter")
-				.Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
-				.Matches(@"[0-9]").WithMessage("Password must contain at least one number")
-				.Matches(@"[@$!%*?&#]").WithMessage("Password must contain at least one special character");
+				.NotEmpty().WithMessage(_localizer["NewPasswordIsRequired"])
+				.MinimumLength(8).WithMessage(_localizer["PasswordMinLength"])
+				.MaximumLength(100).WithMessage(_localizer["PasswordMaxLength"])
+				.Matches(@"[A-Z]").WithMessage(_localizer["ValidationPasswordUppercaseRequired"])
+				.Matches(@"[a-z]").WithMessage(_localizer["ValidationPasswordLowercaseRequired"])
+				.Matches(@"[0-9]").WithMessage(_localizer["ValidationPasswordNumberRequired"])
+				.Matches(@"[@$!%*?&#]").WithMessage(_localizer["ValidationPasswordSpecialCharRequired"]);
 
-			RuleFor(x => x.ConfirmPassword)
-				.NotEmpty().WithMessage("Password confirmation is required")
-				.Equal(x => x.NewPassword).WithMessage("Passwords do not match");
-		}
+
+            RuleFor(x => x.ConfirmPassword)
+				.NotEmpty().WithMessage(_localizer["PasswordConfirmationIsRequired"])
+				.Equal(x => x.NewPassword).WithMessage(_localizer["PasswordsMismatch"]);
+           
+        }
 	}
 }
