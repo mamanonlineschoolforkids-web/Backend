@@ -15,17 +15,5 @@ public class GoogleLoginRequestDtoValidator : AbstractValidator<GoogleLoginReque
         _localizer = localizer;
         RuleFor(x => x.IdToken)
 			.NotEmpty().WithMessage(_localizer["GoogleIDTokenIsRequired"]);
-
-		RuleFor(x => x.Country)
-			.Length(2, 100).WithMessage(_localizer["ValidationCountryLength"])
-			.When(x => !string.IsNullOrEmpty(x.Country));
-
-		RuleFor(x => x.PhoneNumber)
-			.Matches(@"^\+?[1-9]\d{1,14}$").WithMessage(_localizer["InvalidPhoneNumberFormat"])
-			.When(x => !string.IsNullOrEmpty(x.PhoneNumber));
-
-		RuleFor(x => x.Role)
-			.IsInEnum().WithMessage(_localizer["InvalidRoleSelected"]);
-       
     }
 }

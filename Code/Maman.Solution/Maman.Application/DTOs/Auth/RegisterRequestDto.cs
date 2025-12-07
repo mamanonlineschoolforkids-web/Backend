@@ -12,6 +12,4 @@ public class RegisterRequestDto
 	public string Country { get; set; }
 	public string PhoneNumber { get; set; }
 	public UserRole Role { get; set; }
-	public string PreferredLanguage { get; set; } = "ar";
-
 }

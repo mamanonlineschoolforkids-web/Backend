@@ -24,7 +24,7 @@ public class User : AuditableEntity
 	public DateTime? DeletionRequestedAt { get; set; }
 	public Dictionary<string, DateTime>? LastActionAt { get; set; }
 	public CalendarType DisplayCalendar { get; set; } = CalendarType.Gregorian;
-	public string PreferredLanguage { get; set; } = "en-US";
+	public PreferredLanguage PreferredLanguage { get; set; } = PreferredLanguage.Ar;
 
 	// Security fields
 	public int FailedLoginAttempts { get; set; }

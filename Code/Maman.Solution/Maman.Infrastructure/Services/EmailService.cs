@@ -50,7 +50,7 @@ public class EmailService : IEmailService
 		}
 	}
 
-	public async Task SendVerificationEmailAsync(string to, string userName, string verificationLink, CancellationToken cancellationToken = default)
+	public async Task SendVerificationEmailAsync(string to, string userName,int expiry, string verificationLink, CancellationToken cancellationToken = default)
 	{
 		var subject = "Verify Your Email Address";
 		var body = $@"
@@ -60,7 +60,7 @@ public class EmailService : IEmailService
                 <p>Thank you for registering! Please verify your email address by clicking the link below:</p>
                 <p><a href='{verificationLink}' style='background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px;'>Verify Email</a></p>
                 <p>If you didn't create this account, please ignore this email.</p>
-                <p>This link will expire in 24 hours.</p>
+                <p>This link will expire in {expiry} minutes.</p>
                 <br/>
                 <p>Best regards,<br/>The Team</p>
             </body>

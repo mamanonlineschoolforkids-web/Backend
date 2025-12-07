@@ -7,9 +7,9 @@ namespace Maman.Application.Validators.Auth;
 
 public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
 {
-    private readonly IStringLocalizer<SharedResource> localizer;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public RegisterRequestDtoValidator(IStringLocalizer<SharedResource> _localizer)
+    public RegisterRequestDtoValidator(IStringLocalizer<SharedResource> localizer)
 	{
         _localizer = localizer;
         RuleFor(x => x.Name)
@@ -46,11 +46,6 @@ public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
 		RuleFor(x => x.Role)
 			.NotNull().WithMessage(_localizer["RoleIsRequired"])
 			.IsInEnum().WithMessage(_localizer["InvalidRoleSelected"]);
-
-		RuleFor(x => x.PreferredLanguage)
-			.NotEmpty().WithMessage(_localizer["PreferredLanguageIsRequired"])
-			.Must(lang => lang == "en-US" || lang == "ar-EG")
-			.WithMessage(_localizer["ValidationPreferredLanguageAllowedValues"]);
        
     }
 }
