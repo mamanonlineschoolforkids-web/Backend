@@ -15,8 +15,8 @@ public class AuditLog : BaseEntity
 
 public class AuditTarget
 {
-	public string Collection { get; set; } = string.Empty;
-	public string DocumentId { get; set; } = string.Empty;
+	public string Collection { get; set; } = string.Empty; // table
+	public string DocumentId { get; set; } = string.Empty; // row
 }
 
 public class AuditChanges

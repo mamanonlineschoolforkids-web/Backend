@@ -169,6 +169,10 @@ public class EmailService : IEmailService
 		await SendEmailAsync(email, subject, body);
 	}
 
+	public async Task SendAccountRestoreEmailAsync(string email)
+	{
+		throw new NotImplementedException();
+	}
 
 }
 

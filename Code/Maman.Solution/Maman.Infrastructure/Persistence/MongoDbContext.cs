@@ -25,20 +25,14 @@ public class MongoDbContext
 	public IMongoCollection<User> Users =>
 		_database.GetCollection<User>(_settings.Collections.Users);
 
-	public IMongoCollection<RefreshToken> RefreshTokens =>
-		_database.GetCollection<RefreshToken>(_settings.Collections.RefreshTokens);
-
 	public IMongoCollection<AuditLog> AuditLogs =>
 		_database.GetCollection<AuditLog>(_settings.Collections.AuditLogs);
 
 	public IMongoCollection<FinanceAccount> FinanceAccounts =>
 		_database.GetCollection<FinanceAccount>(_settings.Collections.FinanceAccounts);
 
-	public IMongoCollection<EmailVerificationToken> EmailVerificationTokens =>
-	_database.GetCollection<EmailVerificationToken>(_settings.Collections.EmailVerificationTokens);
-
-	public IMongoCollection<PasswordResetToken> PasswordResetTokens =>
-	_database.GetCollection<PasswordResetToken>(_settings.Collections.PasswordResetTokens);
+	public IMongoCollection<Token> Tokens =>
+	_database.GetCollection<Token>(_settings.Collections.Tokens);
 
 	public async Task<IClientSessionHandle> StartSessionAsync()
 	{

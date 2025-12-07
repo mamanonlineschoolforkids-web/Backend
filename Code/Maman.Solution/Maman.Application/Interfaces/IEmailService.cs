@@ -11,5 +11,6 @@ public interface IEmailService
 	Task SendTwoFactorCodeAsync(string email, string code);
 	Task SendPasswordChangedNotificationAsync(string email);
 	Task SendAccountLockedNotificationAsync(string email, DateTime lockoutEnd);
+	Task SendAccountRestoreEmailAsync(string email);
 
 }

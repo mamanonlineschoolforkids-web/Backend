@@ -80,7 +80,6 @@ public class Program
 		builder.Services.AddSingleton<MongoDbContext>();
 
 		#endregion
-
 		#region JWT
 
 		builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -132,11 +131,10 @@ public class Program
 
 		#region Repositories
 		builder.Services.AddScoped<IUserRepository, UserRepository>();
-		builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 		builder.Services.AddScoped<IFinanceAccountRepository, FinanceAccountRepository>();
 		builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
-		builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
-		builder.Services.AddScoped<IEmailVerificationTokenRepository, EmailVerificationTokenRepository>(); 
+		builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+		builder.Services.AddScoped<ITokenRepository, TokenRepository>(); 
 		#endregion
 
 		builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -319,11 +317,10 @@ public class Program
 
 	
 
-		if (app.Environment.IsDevelopment())
-		{
-			app.UseSwagger();
-			app.UseSwaggerUI();
-		}
+	
+		app.UseSwagger();
+		app.UseSwaggerUI();
+		
 
 		app.UseHttpsRedirection();
 

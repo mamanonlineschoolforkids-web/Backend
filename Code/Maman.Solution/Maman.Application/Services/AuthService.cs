@@ -54,19 +54,11 @@ public class AuthService : IAuthService
 	{
 		try
 		{
-			// Check if email already exists
-			if (await _unitOfWork.Users.FindOneAsync(new UserByEmailSpecification(request.Email) , cancellationToken) is not null)
+			if (await _unitOfWork.Users.FindOneAsync(new UserByEmailAndPhoneSpecification(request.Email , request.PhoneNumber) , cancellationToken) is not null)
 			{
-				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["EmailAlreadyExists"]);
+				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["EmailOrPhoneNumberAlreadyExists"]);
 			}
 
-			// Check if phone number already exists
-			if (await _unitOfWork.Users.FindOneAsync(new UserByPhoneNumberSpecification(request.PhoneNumber), cancellationToken) is not null)
-			{
-				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["PhoneNumberAlreadyExists"]);
-			}
-
-			// Create user
 			var user = new User
 			{
 				Name = request.Name,
@@ -75,29 +67,36 @@ public class AuthService : IAuthService
 				Country = request.Country,
 				PhoneNumber = request.PhoneNumber,
 				Role =  request.Role ,
-				PreferredLanguage = request.PreferredLanguage,
 				IsEmailVerified = false,
 				FirstLogin = true
 			};
 
-			// Initialize profile based on role
-			InitializeUserProfile(user, (UserRole) request.Role);
+			InitializeUserProfile(user, request.Role);
 
-			await _unitOfWork.Users.AddAsync(user, cancellationToken);
-
-			// Generate and save email verification token
 			var verificationToken = await _jwtService.GenerateEmailVerificationTokenAsync();
 
-			var emailToken = new EmailVerificationToken
+			var emailToken = new Token
 			{
 				UserId = user.Id,
-				Token = verificationToken,
-				ExpiresAt = DateTime.UtcNow.AddHours(24)
+				UserToken =verificationToken,
+				ExpiresAt = DateTime.UtcNow.AddHours(24),
+				TokenType = TokenType.VerifyEmail
 			};
 
-			await _unitOfWork.EmailVerificationTokens.AddAsync(emailToken, cancellationToken);
+			await _unitOfWork.BeginTransactionAsync(cancellationToken);
+			try
+			{
+				await _unitOfWork.Users.AddAsync(user, cancellationToken);
+				await _unitOfWork.Tokens.AddAsync(emailToken, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+				_logger.LogError("Database Error while registering : {Email} {Message}", user.Email ,ex.Message );
+			}
+			await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
-			// Send verification email
+
 			var verificationLink = $"{_authSettings.FrontendUrl}/verify-email?token={verificationToken}";
 			await _emailService.SendVerificationEmailAsync(user.Email, user.Name, verificationLink, cancellationToken);
 
@@ -116,11 +115,66 @@ public class AuthService : IAuthService
 		}
 	}
 
+	public async Task<ApiResponseDto<bool>> ResendVerificationEmailAsync(string email, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var user = await _unitOfWork.Users.FindOneAsync(new UserByEmailSpecification(email), cancellationToken);
+
+			if (user == null || user.IsDeleted)
+			{
+				return ApiResponseDto<bool>.ErrorResponse(_localizer["UserNotFound"]);
+			}
+
+			if (user.IsEmailVerified)
+			{
+				return ApiResponseDto<bool>.ErrorResponse(_localizer["EmailAlreadyVerified"]);
+			}
+
+			var verificationToken = await _jwtService.GenerateEmailVerificationTokenAsync();
+			
+			var tokenEntity = new Token
+			{
+				UserId = user.Id,
+				UserToken = verificationToken,
+				ExpiresAt = DateTime.UtcNow.AddMinutes(_authSettings.VerifyEmailTokenExpirationMinutes),
+				TokenType = TokenType.VerifyEmail
+			};
+
+
+			await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+			try
+			{
+				await _unitOfWork.Tokens.InvalidateAllUserTokensAsync(user.Id, TokenType.VerifyEmail, cancellationToken);
+				await _unitOfWork.Tokens.AddAsync(tokenEntity, cancellationToken);
+			}
+			catch(Exception ex)
+			{
+				await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+				_logger.LogError("Database Error resend verification to : {Email} {Message}", user.Email, ex.Message);
+			}
+
+			await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+			var verificationLink = $"{_authSettings.FrontendUrl}/verify-email?token={verificationToken}";
+			await _emailService.SendVerificationEmailAsync(user.Email, user.Name, verificationLink, cancellationToken);
+
+			_logger.LogInformation("Verification email resent to: {Email}", email);
+			return ApiResponseDto<bool>.SuccessResponse(true, _localizer["VerificationEmailResent"]);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error resending verification email to {Email}", email);
+			return ApiResponseDto<bool>.ErrorResponse(_localizer["ResendVerificationFailed"]);
+		}
+	}
+
 	public async Task<ApiResponseDto<bool>> VerifyEmailAsync(VerifyEmailDto request, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			var tokenEntity = await _unitOfWork.EmailVerificationTokens.FindOneAsync(new ValidEmailTokenSpecifications(request.Token), cancellationToken);
+			var tokenEntity = await _unitOfWork.Tokens.FindOneAsync(new ValidTokenSpecifications(request.Token , TokenType.VerifyEmail), cancellationToken);
 
 			if (tokenEntity == null)
 			{
@@ -139,20 +193,28 @@ public class AuthService : IAuthService
 				return ApiResponseDto<bool>.SuccessResponse(true, _localizer["EmailAlreadyVerified"]);
 			}
 
-			// Verify email
-			user.IsEmailVerified = true;
-			user.UpdatedAt = DateTime.UtcNow;
-			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
-			// Mark token as used
-			tokenEntity.IsUsed = true;
-			tokenEntity.UsedAt = DateTime.UtcNow;
-			await _unitOfWork.EmailVerificationTokens.UpdateAsync(tokenEntity, cancellationToken);
+			user.VerifyEmail();
+			tokenEntity.MarkAsUsed();
 
-			// Send welcome email
+			await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+			try
+			{
+				await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
+
+				await _unitOfWork.Tokens.UpdateAsync(tokenEntity, cancellationToken);
+			}
+			catch(Exception ex)
+			{
+				await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+				_logger.LogError("Database Error while verifying : {Email} {Message}", user.Email, ex.Message);
+			}
+
+			await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
 			await _emailService.SendWelcomeEmailAsync(user.Email, user.Name, cancellationToken);
 
-			// Update cache
 			await _cacheService.SetAsync($"user:{user.Id}", user, TimeSpan.FromHours(1), cancellationToken);
 
 
@@ -163,51 +225,6 @@ public class AuthService : IAuthService
 		{
 			_logger.LogError(ex, "Error verifying email");
 			return ApiResponseDto<bool>.ErrorResponse(_localizer["EmailVerificationFailed"]);
-		}
-	}
-
-	public async Task<ApiResponseDto<bool>> ResendVerificationEmailAsync(string email, CancellationToken cancellationToken = default)
-	{
-		try
-		{
-			var user = await _unitOfWork.Users.FindOneAsync(new UserByEmailSpecification(email), cancellationToken);
-
-
-			if (user == null || user.IsDeleted)
-			{
-				return ApiResponseDto<bool>.ErrorResponse(_localizer["UserNotFound"]);
-			}
-
-			if (user.IsEmailVerified)
-			{
-				return ApiResponseDto<bool>.ErrorResponse(_localizer["EmailAlreadyVerified"]);
-			}
-
-			// Invalidate old tokens
-			await _unitOfWork.EmailVerificationTokens.InvalidateAllUserTokensAsync(user.Id, cancellationToken);
-
-			// Generate new token
-			var verificationToken = await _jwtService.GenerateEmailVerificationTokenAsync();
-			var tokenEntity = new EmailVerificationToken
-			{
-				UserId = user.Id,
-				Token = verificationToken,
-				ExpiresAt = DateTime.UtcNow.AddHours(24)
-			};
-
-			await _unitOfWork.EmailVerificationTokens.AddAsync(tokenEntity, cancellationToken);
-
-			// Send verification email
-			var verificationLink = $"{_authSettings.FrontendUrl}/verify-email?token={verificationToken}";
-			await _emailService.SendVerificationEmailAsync(user.Email, user.Name, verificationLink, cancellationToken);
-
-			_logger.LogInformation("Verification email resent to: {Email}", email);
-			return ApiResponseDto<bool>.SuccessResponse(true, _localizer["VerificationEmailResent"]);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error resending verification email to {Email}", email);
-			return ApiResponseDto<bool>.ErrorResponse(_localizer["ResendVerificationFailed"]);
 		}
 	}
 
@@ -232,7 +249,6 @@ public class AuthService : IAuthService
 			}
 
 
-			// Check if account is locked
 			if (user.IsLockedOut)
 			{
 				return ApiResponseDto<AuthResponseDto>.ErrorResponse(
@@ -240,24 +256,22 @@ public class AuthService : IAuthService
 				);
 			}
 
-			//// Check if account is deleted 
-			//if (user.IsDeleted)
-			//{
-			//	return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["AccountDeleted"]);
-			//}
 
-			if (user.Status == UserStatus.Suspended)
+			if (user.IsDeleted)
+			{
+				await _emailService.SendAccountRestoreEmailAsync(user.Email);
+			}
+
+			if (user.IsSuspended)
 			{
 				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["AccountSuspended"]);
 			}
 
-			// Check email verification
 			if (!user.IsEmailVerified)
 			{
 				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["EmailNotVerified"]);
 			}
 
-			// Check 2FA
 			if (user.TwoFactorEnabled)
 			{
 				if (string.IsNullOrEmpty(request.TwoFactorCode))
@@ -278,28 +292,25 @@ public class AuthService : IAuthService
 			{
 				await _emailService.SendApplicationTourNotificationAsync(user.Email);
 				user.FirstLogin = false;
-
 			}
 			
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
-			// Generate tokens
 			var accessToken = _jwtService.GenerateAccessToken(user);
 			var refreshToken = _jwtService.GenerateRefreshToken();
 
-			// Save refresh token
-			var refreshTokenEntity = new RefreshToken
+			var refreshTokenEntity = new Token
 			{
 				UserId = user.Id,
-				Token = refreshToken,
+				UserToken = refreshToken,
+				TokenType = TokenType.Refresh,
 				ExpiresAt = DateTime.UtcNow.AddDays(_authSettings.RefreshTokenExpirationDays),
 				CreatedByIp = ipAddress,
 				UserAgent = userAgent
 			};
 
-			await _unitOfWork.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
+			await _unitOfWork.Tokens.AddAsync(refreshTokenEntity, cancellationToken);
 
-			// Cache user data
 			await _cacheService.SetAsync($"user:{user.Id}", user, TimeSpan.FromHours(1), cancellationToken);
 
 			_logger.LogInformation("User logged in successfully: {Email}", user.Email);
@@ -325,7 +336,6 @@ public class AuthService : IAuthService
 		{
 			var user = await _unitOfWork.Users.FindOneAsync(new UserByEmailSpecification(request.Email), cancellationToken);
 
-			// Don't reveal if user exists or not for security
 			if (user == null)
 			{
 				_logger.LogWarning("Password reset requested for non-existent email: {Email}", request.Email);
@@ -337,21 +347,32 @@ public class AuthService : IAuthService
 				return ApiResponseDto<bool>.SuccessResponse(true, _localizer["PasswordResetEmailSent"]);
 			}
 
-			// Invalidate any existing reset tokens
-			await _unitOfWork.PasswordResetTokens.InvalidateAllUserTokensAsync(user.Id, cancellationToken);
-
-			// Generate new reset token
 			var resetToken = await _jwtService.GeneratePasswordResetTokenAsync();
-			var tokenEntity = new PasswordResetToken
+			var tokenEntity = new Token
 			{
 				UserId = user.Id,
-				Token = resetToken,
-				ExpiresAt = DateTime.UtcNow.AddHours(1)
+				UserToken = resetToken,
+				ExpiresAt = DateTime.UtcNow.AddHours(1),
+				TokenType = TokenType.ResetPassword
 			};
 
-			await _unitOfWork.PasswordResetTokens.AddAsync(tokenEntity, cancellationToken);
+			await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-			// Send reset email
+			try
+			{
+				await _unitOfWork.Tokens.InvalidateAllUserTokensAsync(user.Id,TokenType.ResetPassword, cancellationToken);
+				await _unitOfWork.Tokens.AddAsync(tokenEntity, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+				_logger.LogError("Database Error while request resting password : {Email} {Message}", user.Email, ex.Message);
+			}
+
+			await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+
+
 			var resetLink = $"{_authSettings.FrontendUrl}/reset-password?token={resetToken}";
 			await _emailService.SendPasswordResetEmailAsync(user.Email, user.Name, resetLink, cancellationToken);
 
@@ -370,7 +391,7 @@ public class AuthService : IAuthService
 		try
 		{
 
-			var tokenEntity = await _unitOfWork.PasswordResetTokens.FindOneAsync(new ValidPasswordResetTokenSpecifications(request.Token));
+			var tokenEntity = await _unitOfWork.Tokens.FindOneAsync(new ValidTokenSpecifications(request.Token , TokenType.ResetPassword));
 
 			if (tokenEntity == null)
 			{
@@ -384,19 +405,17 @@ public class AuthService : IAuthService
 				return ApiResponseDto<bool>.ErrorResponse(_localizer["UserNotFound"]);
 			}
 
-			// Update password
 			user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
 			user.ResetFailedLoginAttempts();
 
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
-			// Mark token as used
-			tokenEntity.IsUsed = true;
-			tokenEntity.UsedAt = DateTime.UtcNow;
-			await _unitOfWork.PasswordResetTokens.UpdateAsync(tokenEntity, cancellationToken);
+			tokenEntity.MarkAsUsed();
 
-			// Revoke all refresh tokens for security
-			await _unitOfWork.RefreshTokens.RevokeAllUserTokensAsync(user.Id, ipAddress, cancellationToken);
+			await _unitOfWork.Tokens.UpdateAsync(tokenEntity, cancellationToken);
+
+			await _unitOfWork.Tokens.RevokeAllUserTokensAsync(user.Id, ipAddress, cancellationToken);
 
 			// Clear cache
 			await _cacheService.RemoveAsync($"user:{user.Id}", cancellationToken);
@@ -415,7 +434,7 @@ public class AuthService : IAuthService
 	{
 		try
 		{
-			var tokenEntity = await _unitOfWork.RefreshTokens.GetByTokenAsync(refreshToken, cancellationToken);
+			var tokenEntity =await _unitOfWork.Tokens.FindOneAsync(new ValidTokenSpecifications(refreshToken , TokenType.Refresh), cancellationToken);
 
 			if (tokenEntity == null || !tokenEntity.IsActive)
 			{
@@ -430,25 +449,25 @@ public class AuthService : IAuthService
 			}
 
 			// Revoke old token
-			tokenEntity.IsRevoked = true;
-			tokenEntity.RevokedDate = DateTime.UtcNow;
-			await _unitOfWork.RefreshTokens.UpdateAsync(tokenEntity, cancellationToken);
+			tokenEntity.Revoke();
+
+			await _unitOfWork.Tokens.UpdateAsync(tokenEntity, cancellationToken);
 
 			// Generate new tokens
 			var accessToken = _jwtService.GenerateAccessToken(user);
 			var newRefreshToken = _jwtService.GenerateRefreshToken();
 
-			var newRefreshTokenEntity = new RefreshToken
+			var newRefreshTokenEntity = new Token
 			{
 				UserId = user.Id,
-				Token = newRefreshToken,
+				UserToken = newRefreshToken,
 				ExpiresAt = DateTime.UtcNow.AddDays(_authSettings.RefreshTokenExpirationDays),
 				CreatedByIp = ipAddress,
 				UserAgent = userAgent
 			};
 
 			tokenEntity.ReplacedByToken = newRefreshToken;
-			await _unitOfWork.RefreshTokens.AddAsync(newRefreshTokenEntity, cancellationToken);
+			await _unitOfWork.Tokens.AddAsync(newRefreshTokenEntity, cancellationToken);
 
 			return ApiResponseDto<AuthResponseDto>.SuccessResponse(new AuthResponseDto
 			{
@@ -469,7 +488,7 @@ public class AuthService : IAuthService
 	{
 		try
 		{
-			await _unitOfWork.RefreshTokens.RevokeTokenAsync(refreshToken, cancellationToken);
+			await _unitOfWork.Tokens.RevokeTokenAsync(refreshToken, cancellationToken);
 			return ApiResponseDto<bool>.SuccessResponse(true, _localizer["TokenRevoked"]);
 		}
 		catch (Exception ex)
@@ -483,7 +502,7 @@ public class AuthService : IAuthService
 	{
 		try
 		{
-			await _unitOfWork.RefreshTokens.RevokeAllUserTokensAsync(userId, ipAddress, cancellationToken);
+			await _unitOfWork.Tokens.RevokeAllUserTokensAsync(userId, ipAddress, cancellationToken);
 			await _cacheService.RemoveAsync($"user:{userId}", cancellationToken);
 
 			_logger.LogInformation("User logged out: {UserId}", userId);
@@ -562,16 +581,16 @@ public class AuthService : IAuthService
 			var accessToken = _jwtService.GenerateAccessToken(user);
 			var refreshToken = _jwtService.GenerateRefreshToken();
 
-			var refreshTokenEntity = new RefreshToken
+			var refreshTokenEntity = new Token
 			{
 				UserId = user.Id,
-				Token = refreshToken,
+				UserToken = refreshToken,
 				ExpiresAt = DateTime.UtcNow.AddDays(_authSettings.RefreshTokenExpirationDays),
 				CreatedByIp = ipAddress,
 				UserAgent = userAgent
 			};
 
-			await _unitOfWork.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
+			await _unitOfWork.Tokens.AddAsync(refreshTokenEntity, cancellationToken);
 			await _cacheService.SetAsync($"user:{user.Id}", user, TimeSpan.FromHours(1), cancellationToken);
 
 			_logger.LogInformation("Google login successful: {Email}", user.Email);
@@ -728,12 +747,27 @@ public class AuthService : IAuthService
 		if (user.FailedLoginAttempts >= _authSettings.MaxFailedLoginAttempts)
 		{
 			user.LockoutEndDate = DateTime.UtcNow.AddMinutes(_authSettings.LockoutDurationMinutes);
+
+			await _emailService.SendAccountLockedNotificationAsync(user.Email, user.LockoutEndDate.Value);
+
 			_logger.LogWarning("Account locked due to failed login attempts: {Email}", user.Email);
 		}
 
 		await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 	}
 
+	//private async Task ResetFailedLoginAttemptsAsync(User user, CancellationToken cancellationToken)
+	//{
+	//	user.FailedLoginAttempts = 0;
+	//	user.LastFailedLogin = null;
+	//	user.LockoutEndDate = null;
+	//	user.LastLogin = DateTime.UtcNow;
+	//	user.UpdatedAt = DateTime.UtcNow;
+	//	user.LockoutEndDate = null;
+	//	user.LockoutEndDate = null;
+
+	//	await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
+	//}
 	private void InitializeUserProfile(User user, UserRole role)
 	{
 		switch (role)
