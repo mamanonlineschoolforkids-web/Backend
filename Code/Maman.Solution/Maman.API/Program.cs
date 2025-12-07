@@ -233,9 +233,10 @@ public class Program
 		{
 			options.AddPolicy("AllowAll", corsBuilder =>
 			{
-				corsBuilder.AllowAnyOrigin()
+				corsBuilder.WithOrigins("http://127.0.0.1:5500")
 					   .AllowAnyMethod()
-					   .AllowAnyHeader();
+					   .AllowAnyHeader()
+					   .AllowCredentials();
 			});
 		});
 		#endregion

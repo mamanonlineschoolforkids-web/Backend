@@ -13,7 +13,7 @@ namespace Maman.Application.DTOs.User
 		public string PhoneNumber { get; set; }
 		public CalendarType DisplayCalendar { get; set; }
 		public string Country { get; set; }
-		public string PreferredLanguage { get; set; }
+		public PreferredLanguage PreferredLanguage { get; set; }
 
 
 	}

@@ -108,6 +108,7 @@ public class AuthController : ControllerBase
 
 	/// Refresh access token using refresh token
 	[HttpPost("refresh-token")]
+	[ServiceFilter(typeof(ValidationFilter<RefreshTokenRequestDto>))]
 	public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request, CancellationToken cancellationToken)
 	{
 		var ipAddress = _currentUserService.IpAddress ?? "Unknown";
@@ -123,6 +124,7 @@ public class AuthController : ControllerBase
 
 	/// Revoke a specific refresh token
 	[HttpPost("revoke-token")]
+	[ServiceFilter(typeof(ValidationFilter<RevokeTokenRequestDto>))]
 	[Authorize]
 	public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequestDto request, CancellationToken cancellationToken)
 	{
@@ -152,6 +154,7 @@ public class AuthController : ControllerBase
 
 	[HttpPost("google-login")]
 	[EnableRateLimiting("login")]
+	[ServiceFilter(typeof(ValidationFilter<GoogleLoginRequestDto>))]
 	public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto request, CancellationToken cancellationToken)
 	{
 		var ipAddress = _currentUserService.IpAddress ?? "Unknown";
@@ -172,6 +175,7 @@ public class AuthController : ControllerBase
 	/// Enable Two-Factor Authentication
 	[HttpPost("enable-2fa")]
 	[Authorize]
+	[ServiceFilter(typeof(ValidationFilter<Enable2FADto>))]
 	public async Task<IActionResult> Enable2FA([FromBody] Enable2FADto request, CancellationToken cancellationToken)
 	{
 		var userId = _currentUserService.UserId!;
@@ -185,6 +189,7 @@ public class AuthController : ControllerBase
 
 	/// Verify and activate Two-Factor Authentication
 	[HttpPost("verify-2fa")]
+	[ServiceFilter(typeof(ValidationFilter<Verify2FADto>))]
 	[Authorize]
 	public async Task<IActionResult> Verify2FA([FromBody] Verify2FADto request, CancellationToken cancellationToken)
 	{
@@ -199,6 +204,7 @@ public class AuthController : ControllerBase
 
 	/// Disable Two-Factor Authentication
 	[HttpPost("disable-2fa")]
+	[ServiceFilter(typeof(ValidationFilter<Disable2FADto>))]
 	[Authorize]
 	public async Task<IActionResult> Disable2FA([FromBody] Disable2FADto request, CancellationToken cancellationToken)
 	{

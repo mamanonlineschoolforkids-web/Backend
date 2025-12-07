@@ -127,7 +127,7 @@ public class UserService : IUserService
 				user.DisplayCalendar = request.DisplayCalendar;
 			}
 
-			if (!string.IsNullOrWhiteSpace(request.PreferredLanguage) && request.PreferredLanguage != user.PreferredLanguage)
+			if (request.PreferredLanguage != user.PreferredLanguage)
 			{
 				changes.Add(("PreferredLanguage", user.PreferredLanguage, request.PreferredLanguage));
 				user.PreferredLanguage = request.PreferredLanguage;
@@ -507,7 +507,7 @@ public class UserService : IUserService
 			LastLogin = user.LastLogin,
 			Status = user.Status.ToString(),
 			DisplayCalendar = user.DisplayCalendar.ToString(),
-			PreferredLanguage = user.PreferredLanguage,
+			PreferredLanguage = user.PreferredLanguage.ToString(),
 			TwoFactorEnabled = user.TwoFactorEnabled,
 			CreatedAt = user.CreatedAt
 		};

@@ -20,12 +20,8 @@ public class GoogleAuthService : IGoogleAuthService
 			?? throw new InvalidOperationException("Google Client ID not configured");
 	}
 
-	public Task<UserDto> ValidateGoogleTokenAsync(string idToken, CancellationToken cancellationToken)
-	{
-		throw new NotImplementedException();
-	}
 
-	public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleTokenAsync(string idToken)
+	public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleTokenAsync(string idToken , CancellationToken cancellationToken)
 	{
 		var settings = new GoogleJsonWebSignature.ValidationSettings
 		{

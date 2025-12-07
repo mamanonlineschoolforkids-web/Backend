@@ -1,6 +1,6 @@
 ﻿namespace Maman.Core.Enums;
 
-public enum preferredLanguage
+public enum PreferredLanguage
 {
 	En , Ar
 }

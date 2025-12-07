@@ -41,7 +41,7 @@ public class JwtTokenService : IJwtTokenService
 			new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 			new(ClaimTypes.NameIdentifier, user.Id),
 			new(ClaimTypes.Name, user.Name),
-			new("preferredLanguage", user.PreferredLanguage)
+			new("preferredLanguage", user.PreferredLanguage.ToString())
 		};
 
 		// Add role claims

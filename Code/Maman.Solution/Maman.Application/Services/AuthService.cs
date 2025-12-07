@@ -79,7 +79,7 @@ public class AuthService : IAuthService
 			{
 				UserId = user.Id,
 				UserToken =verificationToken,
-				ExpiresAt = DateTime.UtcNow.AddHours(24),
+				ExpiresAt = DateTime.UtcNow.AddMinutes(_authSettings.VerifyEmailTokenExpirationMinutes),
 				TokenType = TokenType.VerifyEmail
 			};
 
@@ -98,7 +98,7 @@ public class AuthService : IAuthService
 
 
 			var verificationLink = $"{_authSettings.FrontendUrl}/verify-email?token={verificationToken}";
-			await _emailService.SendVerificationEmailAsync(user.Email, user.Name, verificationLink, cancellationToken);
+			await _emailService.SendVerificationEmailAsync(user.Email, user.Name, _authSettings.VerifyEmailTokenExpirationMinutes , verificationLink, cancellationToken);
 
 
 			_logger.LogInformation("User registered successfully: {Email}", user.Email);
@@ -158,7 +158,7 @@ public class AuthService : IAuthService
 			await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
 			var verificationLink = $"{_authSettings.FrontendUrl}/verify-email?token={verificationToken}";
-			await _emailService.SendVerificationEmailAsync(user.Email, user.Name, verificationLink, cancellationToken);
+			await _emailService.SendVerificationEmailAsync(user.Email, user.Name,_authSettings.VerifyEmailTokenExpirationMinutes, verificationLink, cancellationToken);
 
 			_logger.LogInformation("Verification email resent to: {Email}", email);
 			return ApiResponseDto<bool>.SuccessResponse(true, _localizer["VerificationEmailResent"]);
@@ -293,7 +293,9 @@ public class AuthService : IAuthService
 				await _emailService.SendApplicationTourNotificationAsync(user.Email);
 				user.FirstLogin = false;
 			}
-			
+
+			user.LastLogin = DateTime.UtcNow;
+
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
 			var accessToken = _jwtService.GenerateAccessToken(user);
@@ -448,31 +450,13 @@ public class AuthService : IAuthService
 				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["UserNotFound"]);
 			}
 
-			// Revoke old token
-			tokenEntity.Revoke();
-
-			await _unitOfWork.Tokens.UpdateAsync(tokenEntity, cancellationToken);
-
 			// Generate new tokens
 			var accessToken = _jwtService.GenerateAccessToken(user);
-			var newRefreshToken = _jwtService.GenerateRefreshToken();
-
-			var newRefreshTokenEntity = new Token
-			{
-				UserId = user.Id,
-				UserToken = newRefreshToken,
-				ExpiresAt = DateTime.UtcNow.AddDays(_authSettings.RefreshTokenExpirationDays),
-				CreatedByIp = ipAddress,
-				UserAgent = userAgent
-			};
-
-			tokenEntity.ReplacedByToken = newRefreshToken;
-			await _unitOfWork.Tokens.AddAsync(newRefreshTokenEntity, cancellationToken);
 
 			return ApiResponseDto<AuthResponseDto>.SuccessResponse(new AuthResponseDto
 			{
 				AccessToken = accessToken,
-				RefreshToken = newRefreshToken,
+				RefreshToken = refreshToken,
 				ExpiresAt = DateTime.UtcNow.AddMinutes(_authSettings.AccessTokenExpirationMinutes),
 				User = MapToUserDto(user)
 			});
@@ -518,56 +502,25 @@ public class AuthService : IAuthService
 	{
 		try
 		{
-			var googleUser = await _googleAuthService.ValidateGoogleTokenAsync(request.IdToken, cancellationToken);
+			var payload = await _googleAuthService.VerifyGoogleTokenAsync(request.IdToken, cancellationToken);
 
-			if (googleUser == null)
+			if (payload is null)
 			{
 				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["InvalidGoogleToken"]);
 			}
 
-			//var user = await _unitOfWork.Users.GetByGoogleIdAsync(googleUser.GoogleId, cancellationToken);
-			var user = await _unitOfWork.Users.FindOneAsync(new UserByGoogleIdSpecification(googleUser.GoogleId), cancellationToken);
+			var user = await _unitOfWork.Users.FindOneAsync(new UserByGoogleIdSpecification(payload.Subject), cancellationToken);
 
-
-			// If user doesn't exist, create new user
 			if (user == null)
 			{
-				 user = await _unitOfWork.Users.FindOneAsync(new UserByEmailSpecification(googleUser.Email), cancellationToken);
-
-				//user = await _unitOfWork.Users.GetByEmailAsync(googleUser.Email, cancellationToken);
-
-				if (user == null)
-				{
-					// Create new user
-					user = new User
-					{
-						Name = googleUser.Name,
-						Email = googleUser.Email,
-						GoogleId = googleUser.GoogleId,
-						Country = request.Country ?? "Unknown",
-						PhoneNumber = request.PhoneNumber ?? string.Empty,
-						Role =  request.Role ,
-						IsEmailVerified = googleUser.IsEmailVerified,
-						ProfilePictureUrl = googleUser.ProfilePictureUrl,
-						PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()) // Random password
-					};
-
-					InitializeUserProfile(user, request.Role);
-					await _unitOfWork.Users.AddAsync(user, cancellationToken);
-				}
-				else
-				{
-					// Link Google account to existing user
-					user.GoogleId = googleUser.GoogleId;
-					if (!user.IsEmailVerified)
-					{
-						user.IsEmailVerified = googleUser.IsEmailVerified;
-					}
-					await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
-				}
+				user = await _unitOfWork.Users.FindOneAsync(new UserByEmailSpecification(payload.Email), cancellationToken);
 			}
 
-			// Check account status
+			if (user == null)
+			{
+				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["NoAccountFound"]);
+			}
+
 			if (user.IsDeleted || user.IsSuspended)
 			{
 				return ApiResponseDto<AuthResponseDto>.ErrorResponse(_localizer["AccountNotActive"]);
@@ -575,9 +528,14 @@ public class AuthService : IAuthService
 
 			user.LastLogin = DateTime.UtcNow;
 			user.UpdatedAt = DateTime.UtcNow;
+		
+			if (user.GoogleId == null && user.Email == payload.Email)
+			{
+				user.GoogleId = payload.Subject;
+			}
+
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
-			// Generate tokens
 			var accessToken = _jwtService.GenerateAccessToken(user);
 			var refreshToken = _jwtService.GenerateRefreshToken();
 
@@ -595,6 +553,7 @@ public class AuthService : IAuthService
 
 			_logger.LogInformation("Google login successful: {Email}", user.Email);
 
+			// 9. Return success response
 			return ApiResponseDto<AuthResponseDto>.SuccessResponse(new AuthResponseDto
 			{
 				AccessToken = accessToken,
@@ -638,6 +597,7 @@ public class AuthService : IAuthService
 			var manualEntryKey = _twoFactorService.GetManualEntryKey(secret);
 
 			// Save secret temporarily (will be enabled after verification)
+			user.TwoFactorEnabled = true;
 			user.TwoFactorSecret = secret;
 			user.UpdatedAt = DateTime.UtcNow;
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
@@ -756,18 +716,6 @@ public class AuthService : IAuthService
 		await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 	}
 
-	//private async Task ResetFailedLoginAttemptsAsync(User user, CancellationToken cancellationToken)
-	//{
-	//	user.FailedLoginAttempts = 0;
-	//	user.LastFailedLogin = null;
-	//	user.LockoutEndDate = null;
-	//	user.LastLogin = DateTime.UtcNow;
-	//	user.UpdatedAt = DateTime.UtcNow;
-	//	user.LockoutEndDate = null;
-	//	user.LockoutEndDate = null;
-
-	//	await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
-	//}
 	private void InitializeUserProfile(User user, UserRole role)
 	{
 		switch (role)
@@ -805,7 +753,7 @@ public class AuthService : IAuthService
 			LastLogin = user.LastLogin,
 			Status = user.Status.ToString(),
 			DisplayCalendar = user.DisplayCalendar.ToString(),
-			PreferredLanguage = user.PreferredLanguage,
+			PreferredLanguage = user.PreferredLanguage.ToString(),
 			TwoFactorEnabled = user.TwoFactorEnabled,
 			CreatedAt = user.CreatedAt
 		};

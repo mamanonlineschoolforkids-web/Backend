@@ -32,9 +32,9 @@ namespace Maman.Application.Validators.User
 				.When(x => !string.IsNullOrEmpty(x.DisplayCalendar.ToString()));
 
 			RuleFor(x => x.PreferredLanguage)
-				.Must(lang => lang == "en-US" || lang == "ar-EG")
-				.WithMessage("Preferred language must be either 'en-US' or 'ar-EG'")
-				.When(x => !string.IsNullOrEmpty(x.PreferredLanguage));
+				.Must(lang => lang == PreferredLanguage.Ar || lang == PreferredLanguage.En)
+				.WithMessage("Preferred language must be either 'en-US' or 'ar-EG'");
+				
 		}
 	}
 
