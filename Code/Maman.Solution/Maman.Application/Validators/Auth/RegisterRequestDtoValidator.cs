@@ -1,50 +1,56 @@
 ﻿using FluentValidation;
 using Maman.Application.DTOs.Auth;
+using Maman.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Maman.Application.Validators.Auth;
 
 public class RegisterRequestDtoValidator : AbstractValidator<RegisterRequestDto>
 {
-	public RegisterRequestDtoValidator()
+    private readonly IStringLocalizer<SharedResource> localizer;
+
+    public RegisterRequestDtoValidator(IStringLocalizer<SharedResource> _localizer)
 	{
-		RuleFor(x => x.Name)
-			.NotEmpty().WithMessage("Name is required")
-			.Length(2, 100).WithMessage("Name must be between 2 and 100 characters")
-			.Matches(@"^[a-zA-Z\s]+$").WithMessage("Name can only contain letters and spaces");
+        _localizer = localizer;
+        RuleFor(x => x.Name)
+			.NotEmpty().WithMessage(_localizer["NameIsRequired"])
+			.Length(2, 100).WithMessage(_localizer["ValidationNameLength"])
+			.Matches(@"^[a-zA-Z\s]+$").WithMessage(_localizer["ValidationNameAllowedCharacters"]);
 
 		RuleFor(x => x.Email)
-			.NotEmpty().WithMessage("Email is required")
-			.EmailAddress().WithMessage("Invalid email format")
-			.MaximumLength(255).WithMessage("Email must not exceed 255 characters");
+			.NotEmpty().WithMessage(_localizer["EmailIsRequired"])
+			.EmailAddress().WithMessage(_localizer["InvalidEmailFormat"])
+			.MaximumLength(255).WithMessage(_localizer["validationEmailMaxLength"]);
 
 		RuleFor(x => x.Password)
-			.NotEmpty().WithMessage("Password is required")
-			.MinimumLength(8).WithMessage("Password must be at least 8 characters")
-			.MaximumLength(100).WithMessage("Password must not exceed 100 characters")
-			.Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter")
-			.Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
-			.Matches(@"[0-9]").WithMessage("Password must contain at least one number")
-			.Matches(@"[@$!%*?&#]").WithMessage("Password must contain at least one special character (@$!%*?&#)");
+			.NotEmpty().WithMessage(_localizer["PasswordIsRequired"])
+			.MinimumLength(8).WithMessage(_localizer["PasswordMinLength"])
+			.MaximumLength(100).WithMessage(_localizer["PasswordMaxLength"])
+			.Matches(@"[A-Z]").WithMessage(_localizer["ValidationPasswordUppercaseRequired"])
+			.Matches(@"[a-z]").WithMessage(_localizer["ValidationPasswordLowercaseRequired"])
+			.Matches(@"[0-9]").WithMessage(_localizer["Password must contain at least one number"])
+			.Matches(@"[@$!%*?&#]").WithMessage(_localizer["ValidationPasswordSpecialCharRequired"]);
 
 		RuleFor(x => x.ConfirmPassword)
-			.NotEmpty().WithMessage("Password confirmation is required")
-			.Equal(x => x.Password).WithMessage("Passwords do not match");
+			.NotEmpty().WithMessage(_localizer["PasswordConfirmationIsRequired"])
+			.Equal(x => x.Password).WithMessage(_localizer["PasswordsMismatch"]);
 
 		RuleFor(x => x.PhoneNumber)
-			.NotEmpty().WithMessage("Phone number is required")
-			.Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("Invalid phone number format (E.164 format expected)");
+			.NotEmpty().WithMessage(_localizer["PhoneNumberIsRequired"])
+			.Matches(@"^\+?[1-9]\d{1,14}$").WithMessage(_localizer["InvalidPhoneNumberFormat"]);
 
 		RuleFor(x => x.Country)
-			.NotEmpty().WithMessage("Country is required")
-			.Length(2, 100).WithMessage("Country must be between 2 and 100 characters");
+			.NotEmpty().WithMessage(_localizer["CountryIsRequired"])
+			.Length(2, 100).WithMessage(_localizer["ValidationCountryLength"]);
 
 		RuleFor(x => x.Role)
-			.NotNull().WithMessage("Role is required")
-			.IsInEnum().WithMessage("Invalid role selected");
+			.NotNull().WithMessage(_localizer["RoleIsRequired"])
+			.IsInEnum().WithMessage(_localizer["InvalidRoleSelected"]);
 
 		RuleFor(x => x.PreferredLanguage)
-			.NotEmpty().WithMessage("Preferred language is required")
+			.NotEmpty().WithMessage(_localizer["PreferredLanguageIsRequired"])
 			.Must(lang => lang == "en-US" || lang == "ar-EG")
-			.WithMessage("Preferred language must be either 'en-US' or 'ar-EG'");
-	}
+			.WithMessage(_localizer["ValidationPreferredLanguageAllowedValues"]);
+       
+    }
 }

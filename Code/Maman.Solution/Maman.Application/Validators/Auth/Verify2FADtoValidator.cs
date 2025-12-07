@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Maman.Application.DTOs.Auth;
+using Maman.Localization;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +12,16 @@ namespace Maman.Application.Validators.Auth
 {
 	public class Verify2FADtoValidator : AbstractValidator<Verify2FADto>
 	{
-		public Verify2FADtoValidator()
+        private readonly IStringLocalizer<SharedResource> _localizer;
+
+        public Verify2FADtoValidator(IStringLocalizer<SharedResource> localizer)
 		{
-			RuleFor(x => x.Code)
-				.NotEmpty().WithMessage("Verification code is required")
-				.Length(6).WithMessage("Code must be 6 digits")
-				.Matches(@"^\d{6}$").WithMessage("Code must contain only numbers");
-		}
+            _localizer = localizer;
+            RuleFor(x => x.Code)
+				.NotEmpty().WithMessage(_localizer["VerificationCodeIsRequired"])
+				.Length(6).WithMessage(_localizer["CodeMustBe6Digits"])
+				.Matches(@"^\d{6}$").WithMessage(_localizer["CodeMustContainOnlyNumbers"]);
+           
+        }
 	}
 }

@@ -309,10 +309,103 @@
   <data name="GetUsersFailed" xml:space="preserve">
     <value>فشل في الحصول على قائمة المستخدمين</value>
   </data>
-  <data name="VerificaionTokenRequired" xml:space="preserve">
-    <value>حقل ال  token  مطلوب</value>
+  <data name="VerificationCodeIsRequired" xml:space="preserve">
+    <value>مطلوب إدخال رمز التحقق</value>
   </data>
-  <data name="EmailOrPhoneNumberAlreadyExists" xml:space="preserve">
-    <value>البريد الالكتروني او الهاتف تم استخدامهم من قبل</value>
+  <data name="CodeMustBe6Digits" xml:space="preserve">
+    <value>يجب أن يتكون الرمز من 6 أرقام</value>
+  </data>
+  <data name="CodeMustContainOnlyNumbers" xml:space="preserve">
+    <value>يجب أن يحتوي الرمز على أرقام فقط</value>
+  </data>
+  <data name="PasswordIsRequired" xml:space="preserve">
+    <value>يجب ادخال كلمة المرور</value>
+  </data>
+  <data name="GoogleIDTokenIsRequired" xml:space="preserve">
+    <value>يجب إدخال رمز تعريف Google </value>
+  </data>
+  <data name="ValidationCountryLength" xml:space="preserve">
+    <value>يجب أن يكون اسم الدولة بين 2 و100 حرفًا</value>
+  </data>
+  <data name="InvalidPhoneNumberFormat" xml:space="preserve">
+    <value>صيغة رقم الهاتف المدخَل غير صحيحة</value>
+  </data>
+  <data name="InvalidRoleSelected" xml:space="preserve">
+    <value>الدور الذي تم اختياره غير صالح</value>
+  </data>
+  <data name="VerificationTokenIsRequired" xml:space="preserve">
+    <value>مطلوب إدخال رمز التحقق</value>
+  </data>
+  <data name="RefreshTokenIsRequired" xml:space="preserve">
+    <value>يجب إدخال رمز التحديث</value>
+  </data>
+  <data name="EmailIsRequired" xml:space="preserve">
+    <value>يجب إدخال البريد الإلكتروني</value>
+  </data>
+  <data name="InvalidEmailFormat" xml:space="preserve">
+    <value>صيغة البريد الإلكتروني المدخَل غير صحيحة</value>
+  </data>
+  <data name="Two-FactorCodeLength" xml:space="preserve">
+    <value>يجب أن يتكون رمز التحقق الثنائي من 6 أرقام</value>
+  </data>
+  <data name="Two-factorCodeMustContainOnlyNumbers" xml:space="preserve">
+    <value>يجب أن يحتوي رمز التحقق الثنائي على أرقام فقط</value>
+  </data>
+  <data name="NewPasswordIsRequired" xml:space="preserve">
+    <value>مطلوب إدخال كلمة المرور الجديدة</value>
+  </data>
+  <data name="ResetTokenIsRequired" xml:space="preserve">
+    <value>مطلوب إدخال رمز إعادة التعيين</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>يجب أن تتكون كلمة المرور من 8 أحرف على الأقل</value>
+  </data>
+  <data name="PasswordMaxLength" xml:space="preserve">
+    <value>يجب ألا تتجاوز كلمة المرور 100 حرف</value>
+  </data>
+  <data name="ValidationPasswordUppercaseRequired" xml:space="preserve">
+    <value>يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل</value>
+  </data>
+  <data name="ValidationPasswordLowercaseRequired" xml:space="preserve">
+    <value>يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل</value>
+  </data>
+  <data name="ValidationPasswordNumberRequired" xml:space="preserve">
+    <value>يجب أن تحتوي كلمة المرور على رقم واحد على الأقل</value>
+  </data>
+  <data name="ValidationPasswordSpecialCharRequired" xml:space="preserve">
+    <value>يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*?&amp;#)</value>
+  </data>
+  <data name="PasswordConfirmationIsRequired" xml:space="preserve">
+    <value>مطلوب تأكيد كلمة المرور</value>
+  </data>
+  <data name="PasswordsMismatch" xml:space="preserve">
+    <value>كلمة المرور وتأكيدها غير متطابقين</value>
+  </data>
+  <data name="PhoneNumberIsRequired" xml:space="preserve">
+    <value>مطلوب إدخال رقم الهاتف</value>
+  </data>
+  <data name="CountryIsRequired" xml:space="preserve">
+    <value>مطلوب اختيار الدولة</value>
+  </data>
+  <data name="NameIsRequired" xml:space="preserve">
+    <value>يرجى إدخال الاسم</value>
+  </data>
+  <data name="ValidationNameAllowedCharacters" xml:space="preserve">
+    <value>يمكن أن يحتوي الاسم على حروف ومسافات فقط</value>
+  </data>
+  <data name="validationEmailMaxLength" xml:space="preserve">
+    <value>يجب ألا يتجاوز البريد الإلكتروني 255 حرفًا</value>
+  </data>
+  <data name="RoleIsRequired" xml:space="preserve">
+    <value>مطلوب اختيار الدور</value>
+  </data>
+  <data name="PreferredLanguageIsRequired" xml:space="preserve">
+    <value>مطلوب اختيار اللغة المفضلة</value>
+  </data>
+  <data name="ValidationPreferredLanguageAllowedValues" xml:space="preserve">
+    <value>يجب أن تكون اللغة المفضلة إما 'en-US' أو 'ar-EG'</value>
+  </data>
+  <data name="ValidationNameLength" xml:space="preserve">
+    <value>يجب أن يتراوح طول الاسم بين 2 و100 حرفًا</value>
   </data>
 </root>

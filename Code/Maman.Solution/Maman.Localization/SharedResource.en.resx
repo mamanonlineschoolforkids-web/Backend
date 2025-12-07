@@ -309,10 +309,103 @@
   <data name="GetUsersFailed" xml:space="preserve">
     <value>Failed to get users list</value>
   </data>
-  <data name="VerificaionTokenRequired" xml:space="preserve">
-    <value>Verification Token Required</value>
+  <data name="VerificationCodeIsRequired" xml:space="preserve">
+    <value>Verification code is required</value>
   </data>
-  <data name="EmailOrPhoneNumberAlreadyExists" xml:space="preserve">
-    <value>Email or phone number already exists</value>
+  <data name="CodeMustBe6Digits" xml:space="preserve">
+    <value>Code must be 6 digits</value>
+  </data>
+  <data name="CodeMustContainOnlyNumbers" xml:space="preserve">
+    <value>Code must contain only numbers</value>
+  </data>
+  <data name="PasswordIsRequired" xml:space="preserve">
+    <value>A Password is required</value>
+  </data>
+  <data name="GoogleIDTokenIsRequired" xml:space="preserve">
+    <value>Google ID token is required</value>
+  </data>
+  <data name="ValidationCountryLength" xml:space="preserve">
+    <value>Country must be between 2 and 100 characters</value>
+  </data>
+  <data name="InvalidPhoneNumberFormat" xml:space="preserve">
+    <value>Invalid phone number format (E.164 format expected)</value>
+  </data>
+  <data name="InvalidRoleSelected" xml:space="preserve">
+    <value>The selected role is invalid</value>
+  </data>
+  <data name="VerificationTokenIsRequired" xml:space="preserve">
+    <value>Verification token is required</value>
+  </data>
+  <data name="RefreshTokenIsRequired" xml:space="preserve">
+    <value>Refresh token is required</value>
+  </data>
+  <data name="EmailIsRequired" xml:space="preserve">
+    <value>An Email Address is required</value>
+  </data>
+  <data name="InvalidEmailFormat" xml:space="preserve">
+    <value>The email address format is invalid</value>
+  </data>
+  <data name="Two-FactorCodeLength" xml:space="preserve">
+    <value>Two-factor code must be 6 digits</value>
+  </data>
+  <data name="Two-factorCodeMustContainOnlyNumbers" xml:space="preserve">
+    <value>Two-factor code must contain only numbers</value>
+  </data>
+  <data name="NewPasswordIsRequired" xml:space="preserve">
+    <value>New password is required</value>
+  </data>
+  <data name="ResetTokenIsRequired" xml:space="preserve">
+    <value>Reset token is required</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>Password must be at least 8 characters</value>
+  </data>
+  <data name="PasswordMaxLength" xml:space="preserve">
+    <value>Password must not exceed 100 characters</value>
+  </data>
+  <data name="ValidationPasswordUppercaseRequired" xml:space="preserve">
+    <value>Password must contain at least one uppercase letter</value>
+  </data>
+  <data name="ValidationPasswordLowercaseRequired" xml:space="preserve">
+    <value>Password must contain at least one lowercase letter</value>
+  </data>
+  <data name="ValidationPasswordNumberRequired" xml:space="preserve">
+    <value>Password must contain at least one number</value>
+  </data>
+  <data name="ValidationPasswordSpecialCharRequired" xml:space="preserve">
+    <value>Password must contain at least one special character (@$!%*?&amp;#)</value>
+  </data>
+  <data name="PasswordConfirmationIsRequired" xml:space="preserve">
+    <value>Password confirmation is required</value>
+  </data>
+  <data name="PasswordsMismatch" xml:space="preserve">
+    <value>The password and its confirmation do not match</value>
+  </data>
+  <data name="PhoneNumberIsRequired" xml:space="preserve">
+    <value>Phone number is required</value>
+  </data>
+  <data name="CountryIsRequired" xml:space="preserve">
+    <value>Country Is Required</value>
+  </data>
+  <data name="NameIsRequired" xml:space="preserve">
+    <value>Name is required</value>
+  </data>
+  <data name="ValidationNameAllowedCharacters" xml:space="preserve">
+    <value>Name can only contain letters and spaces</value>
+  </data>
+  <data name="validationEmailMaxLength" xml:space="preserve">
+    <value>Email must not exceed 255 characters</value>
+  </data>
+  <data name="RoleIsRequired" xml:space="preserve">
+    <value>Role is required</value>
+  </data>
+  <data name="PreferredLanguageIsRequired" xml:space="preserve">
+    <value>Preferred language is required</value>
+  </data>
+  <data name="ValidationPreferredLanguageAllowedValues" xml:space="preserve">
+    <value>Preferred language must be either 'en-US' or 'ar-EG'</value>
+  </data>
+  <data name="ValidationNameLength" xml:space="preserve">
+    <value>The name must be between 2 and 100 characters long</value>
   </data>
 </root>
