@@ -44,15 +44,15 @@ public class MongoRepository<T> : IRepository<T> where T : BaseEntity
 
 	public virtual async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
 	{
-		entity.CreatedAt = DateTime.UtcNow;
-		entity.UpdatedAt = DateTime.UtcNow;
 		await _collection.InsertOneAsync(entity, null, cancellationToken);
 		return entity;
 	}
 
-	public virtual async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+	public virtual async Task UpdateAsync(T entity , CancellationToken cancellationToken = default)
 	{
+
 		entity.UpdatedAt = DateTime.UtcNow;
+
 		await _collection.ReplaceOneAsync(
 			x => x.Id == entity.Id,
 			entity,

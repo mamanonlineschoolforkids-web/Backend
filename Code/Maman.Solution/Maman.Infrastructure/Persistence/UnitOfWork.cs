@@ -12,29 +12,22 @@ public class UnitOfWork : IUnitOfWork
 	public UnitOfWork(
 		MongoDbContext context,
 		IUserRepository users,
-		IRefreshTokenRepository refreshTokens,
 		IFinanceAccountRepository financeAccounts,
 		IAuditLogRepository auditLogs ,
-		IEmailVerificationTokenRepository emailVerificationTokens,
-		IPasswordResetTokenRepository passwordResetTokens
+		ITokenRepository tokens
 		)
 	{
 		_context = context;
 		Users = users;
-		RefreshTokens = refreshTokens;
 		FinanceAccounts = financeAccounts;
 		AuditLogs = auditLogs;
-		EmailVerificationTokens = emailVerificationTokens;
-		PasswordResetTokens = passwordResetTokens;
+		Tokens = tokens;
 	}
 
 	public IUserRepository Users { get; }
-	public IRefreshTokenRepository RefreshTokens { get; }
 	public IFinanceAccountRepository FinanceAccounts { get; }
 	public IAuditLogRepository AuditLogs { get; }
-	public IEmailVerificationTokenRepository EmailVerificationTokens { get; }
-	public IPasswordResetTokenRepository PasswordResetTokens { get; }
-
+	public ITokenRepository Tokens { get; }
 
 	public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
 	{

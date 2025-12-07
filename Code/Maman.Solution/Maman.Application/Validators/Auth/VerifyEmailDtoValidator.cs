@@ -1,19 +1,20 @@
 ﻿using FluentValidation;
 using Maman.Application.DTOs.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Maman.Localization;
+using Microsoft.Extensions.Localization;
 
-namespace Maman.Application.Validators.Auth
+namespace Maman.Application.Validators.Auth;
+
+public class VerifyEmailDtoValidator : AbstractValidator<VerifyEmailDto>
 {
-	public class VerifyEmailDtoValidator : AbstractValidator<VerifyEmailDto>
+	private readonly IStringLocalizer<SharedResource> _localizer;
+
+	public VerifyEmailDtoValidator(IStringLocalizer<SharedResource> localizer)
 	{
-		public VerifyEmailDtoValidator()
-		{
-			RuleFor(x => x.Token)
-				.NotEmpty().WithMessage("Verification token is required");
-		}
+		_localizer=localizer;
+
+
+		RuleFor(x => x.Token)
+			.NotEmpty().WithMessage(_localizer["VerificaionTokenRequired"]);
 	}
 }

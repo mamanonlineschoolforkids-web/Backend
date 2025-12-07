@@ -1,6 +1,8 @@
 ﻿using Maman.Core.Common;
 using Maman.Core.Enums;
+using Maman.Core.Interfaces;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Threading;
 
 
 namespace Maman.Core.Entities.Auth;
@@ -17,11 +19,9 @@ public class User : AuditableEntity
 	public string? ProfilePictureUrl { get; set; }
 
 	public UserRole Role { get; set; } = new();
-
 	public DateTime LastLogin { get; set; }
 	public UserStatus Status { get; set; } = UserStatus.Active;
 	public DateTime? DeletionRequestedAt { get; set; }
-
 	public Dictionary<string, DateTime>? LastActionAt { get; set; }
 	public CalendarType DisplayCalendar { get; set; } = CalendarType.Gregorian;
 	public string PreferredLanguage { get; set; } = "en-US";
@@ -56,6 +56,8 @@ public class User : AuditableEntity
 		LockoutEndDate = null;
 		LastLogin = DateTime.UtcNow;
 		UpdatedAt = DateTime.UtcNow;
+		LockoutEndDate = null;
+		LockoutEndDate = null;
 	}
 
 	public void SoftDelete(string? deletedBy = null)
@@ -64,5 +66,11 @@ public class User : AuditableEntity
 		DeletedAt = DateTime.UtcNow;
 		DeletedBy = deletedBy;
 		Status = UserStatus.Deleted;
+	}
+
+	public void VerifyEmail()
+	{
+		IsEmailVerified = true;
+		UpdatedAt = DateTime.UtcNow;
 	}
 }

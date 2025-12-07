@@ -3,13 +3,9 @@
 public interface IUnitOfWork : IDisposable
 {
 	IUserRepository Users { get; }
-	IRefreshTokenRepository RefreshTokens { get; }
 	IFinanceAccountRepository FinanceAccounts { get; }
 	IAuditLogRepository AuditLogs { get; }
-	IEmailVerificationTokenRepository EmailVerificationTokens { get; }
-	IPasswordResetTokenRepository PasswordResetTokens { get; }
-
-
+	ITokenRepository Tokens { get; }
 
 	Task BeginTransactionAsync(CancellationToken cancellationToken = default);
 	Task CommitTransactionAsync(CancellationToken cancellationToken = default);

@@ -178,7 +178,7 @@ public class UserService : IUserService
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
 			// Revoke all refresh tokens for security
-			await _unitOfWork.RefreshTokens.RevokeAllUserTokensAsync(userId, ipAddress, cancellationToken);
+			await _unitOfWork.Tokens.RevokeAllUserTokensAsync(userId, ipAddress, cancellationToken);
 
 			// Clear cache
 			await _cacheService.RemoveAsync($"user:{userId}", cancellationToken);
@@ -282,7 +282,7 @@ public class UserService : IUserService
 			await _unitOfWork.Users.UpdateAsync(user, cancellationToken);
 
 			// Revoke all tokens
-			await _unitOfWork.RefreshTokens.RevokeAllUserTokensAsync(userId, ipAdress, cancellationToken);
+			await _unitOfWork.Tokens.RevokeAllUserTokensAsync(userId, ipAdress, cancellationToken);
 
 			// Clear cache
 			await _cacheService.RemoveAsync($"user:{userId}", cancellationToken);
@@ -386,7 +386,7 @@ public class UserService : IUserService
 			await _unitOfWork.Users.DeleteAsync(userId, cancellationToken);
 
 			// Delete all tokens
-			await _unitOfWork.RefreshTokens.RevokeAllUserTokensAsync(userId, ipAdress, cancellationToken);
+			await _unitOfWork.Tokens.RevokeAllUserTokensAsync(userId, ipAdress, cancellationToken);
 
 			// Clear cache
 			await _cacheService.RemoveAsync($"user:{userId}", cancellationToken);

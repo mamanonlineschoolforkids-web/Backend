@@ -55,6 +55,14 @@ public class UserByEmailSpecification : BaseSpecification<User>
 	}
 }
 
+public class UserByEmailAndPhoneSpecification : BaseSpecification<User>
+{
+	public UserByEmailAndPhoneSpecification(string email, string phoneNumber)
+		: base(u => u.Email == email || u.PhoneNumber == phoneNumber)
+	{
+	}
+}
+
 public class UserByPhoneNumberSpecification : BaseSpecification<User>
 {
 	public UserByPhoneNumberSpecification(string phoneNumber)

@@ -56,7 +56,7 @@ public class Review
 	public ReviewUser User { get; set; } = new();
 	public int Rating { get; set; }
 	public string Comment { get; set; } = string.Empty;
-	public string? AppointmentId { get; set; }
+	public string AppointmentId { get; set; }
 	public string Status { get; set; } = "Approved";
 	public bool IsEdited { get; set; }
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

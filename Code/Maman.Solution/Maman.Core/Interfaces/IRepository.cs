@@ -15,4 +15,3 @@ public interface IRepository<T> where T : class
 	Task<long> CountAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default);
 	Task<(IEnumerable<T> Items, long TotalCount)> GetPagedAsync(ISpecification<T> specification ,CancellationToken cancellationToken = default);
 }
-

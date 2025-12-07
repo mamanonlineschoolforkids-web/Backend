@@ -13,6 +13,5 @@ public class CollectionSettings
 	public string RefreshTokens { get; set; } = "refreshTokens";
 	public string FinanceAccounts { get; set; } = "financeAccounts";
 	public string AuditLogs { get; set; } = "auditLogs";
-	public string EmailVerificationTokens { get; set; } = "emailVerificationTokens";
-	public string PasswordResetTokens { get; set; } = "passwordResetTokens";
+	public string Tokens { get; set; } = "tokens";
 }
