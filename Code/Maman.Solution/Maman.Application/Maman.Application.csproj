@@ -6,17 +6,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="12.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="FluentValidation" Version="11.5.1" />
+		<PackageReference Include="Google.Apis.Auth" Version="1.64.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Maman.Core\Maman.Core.csproj" />
+    <ProjectReference Include="..\Maman.Localization\Maman.Localization.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-    <Folder Include="Specifications\" />
-  </ItemGroup>
 
 </Project>
